@@ -46,6 +46,8 @@ output overflow
     reg r_output_tvalid;
     reg r_overflow;
     reg r_sign;
+    reg signbit_a;
+    reg signbit_b;
     
     always@(posedge clk)
     begin
@@ -105,6 +107,8 @@ end
 else begin
                 if(r_output_tready) begin
                 sum <= a+b;
+                signbit_a <= a[15];
+                signbit_b <= b[15];
                 r_output_tvalid <= 1;
                 end
                 else begin
@@ -117,8 +121,8 @@ end
  always@(posedge clk)                                            // overflow logic
  begin
  if(!reset_n) r_overflow <= 0;
- else if(r_sign && !a[15] && !b[15] && sum[15]) r_overflow <= 1;         
- else if (r_sign && a[15] && b[15] && !sum[15]) r_overflow <= 1;
+ else if(r_sign && !signbit_a && !signbit_b  && sum[15]) r_overflow <= 1;         
+ else if (r_sign && signbit_a && signbit_b && !sum[15]) r_overflow <= 1;
  else if (!r_sign && sum[16]) r_overflow <= 1;
  else r_overflow <= 0;
  end
